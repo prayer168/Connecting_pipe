@@ -4,7 +4,7 @@
 
 ## 開啟教材
 
-- GitHub Pages 網站啟用後：`https://prayer168.github.io/Connecting_pipe/`
+- 線上教材：<https://prayer168.github.io/Connecting_pipe/>
 - 本地使用：直接以瀏覽器開啟 `index.html`
 
 ## 內容
@@ -30,3 +30,8 @@
 
 第一版呈現清水、容器底部相通且上方開放的情境。動畫速度為教學示意，尚未包含不同密度液體、外加壓力、毛細作用或真實流速計算。
 
+## 發佈資訊
+
+- Repository：<https://github.com/prayer168/Connecting_pipe>
+- GitHub Pages：由 `main` 分支根目錄發布。
+- 上線驗證：已確認公開首頁可載入、預覽圖片可讀取，且核心「預測 -> 打開通道 -> 水面等高」互動正常執行。
