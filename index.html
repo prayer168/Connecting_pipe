@@ -1,0 +1,1402 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>連通管探險站：水面會停在哪裡？</title>
+  <style>
+    :root {
+      --sky: #dff7ff;
+      --sun: #fff0ae;
+      --foam: #fffdf7;
+      --ink: #16324a;
+      --muted: #527086;
+      --ocean: #147fa6;
+      --water: #32c7ec;
+      --water-deep: #1688cc;
+      --mint: #d8f5df;
+      --leaf: #258460;
+      --yellow: #ffd35c;
+      --orange: #ff8c42;
+      --pink: #ff7f96;
+      --border: #c9e7ed;
+      --card: rgba(255, 255, 255, 0.93);
+      --shadow: 0 16px 38px rgba(23, 71, 101, 0.12);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      min-width: 300px;
+      min-height: 100vh;
+      font-family: "Microsoft JhengHei", "Noto Sans TC", Arial, sans-serif;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 10% 8%, #fff8d2 0 9%, transparent 10%),
+        radial-gradient(circle at 91% 4%, #caeff8 0 12%, transparent 13%),
+        linear-gradient(150deg, #dff8ff, #f6fdff 43%, #eefbf2);
+    }
+
+    button,
+    select,
+    input {
+      font: inherit;
+    }
+
+    button {
+      cursor: pointer;
+    }
+
+    button:focus-visible,
+    select:focus-visible,
+    input:focus-visible {
+      outline: 4px solid #ffbe40;
+      outline-offset: 2px;
+    }
+
+    .page {
+      max-width: 1440px;
+      margin: 0 auto;
+      padding: 18px clamp(12px, 2.5vw, 32px) 42px;
+    }
+
+    .panel {
+      background: var(--card);
+      border: 2px solid rgba(201, 231, 237, 0.8);
+      border-radius: 26px;
+      box-shadow: var(--shadow);
+    }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 18px;
+      padding: clamp(16px, 2.6vw, 25px);
+      margin-bottom: 18px;
+    }
+
+    .brand {
+      display: flex;
+      gap: 14px;
+      align-items: center;
+    }
+
+    .drop-logo {
+      width: clamp(58px, 8vw, 75px);
+      height: clamp(58px, 8vw, 75px);
+      border-radius: 48% 52% 55% 45% / 62% 62% 38% 38%;
+      transform: rotate(45deg);
+      background: linear-gradient(130deg, #47d7f2, #138acb);
+      position: relative;
+      flex-shrink: 0;
+    }
+
+    .drop-logo::after {
+      content: "";
+      width: 15px;
+      height: 20px;
+      background: rgba(255, 255, 255, 0.52);
+      border-radius: 50%;
+      position: absolute;
+      left: 15px;
+      top: 12px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(1.42rem, 3vw, 2.35rem);
+      line-height: 1.2;
+      color: #075579;
+    }
+
+    .subtitle {
+      margin: 6px 0 0;
+      color: var(--muted);
+      font-size: clamp(0.9rem, 1.5vw, 1.04rem);
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 9px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .pill {
+      border: 0;
+      background: #edfaff;
+      color: #126685;
+      border-radius: 999px;
+      padding: 11px 15px;
+      font-weight: 700;
+      transition: transform 0.16s ease, background 0.16s ease;
+    }
+
+    .pill:hover {
+      background: #d8f5ff;
+      transform: translateY(-1px);
+    }
+
+    .pill.sun {
+      background: #fff3b8;
+      color: #855703;
+    }
+
+    .dashboard {
+      display: grid;
+      grid-template-columns: minmax(225px, 286px) minmax(390px, 1fr) minmax(230px, 294px);
+      gap: 16px;
+      align-items: start;
+    }
+
+    .tools,
+    .results {
+      padding: 19px;
+    }
+
+    h2 {
+      margin: 0 0 12px;
+      font-size: clamp(1.13rem, 2vw, 1.36rem);
+      color: #075579;
+    }
+
+    .section-kicker {
+      margin: 0 0 6px;
+      color: var(--ocean);
+      font-size: 0.82rem;
+      font-weight: 800;
+      letter-spacing: 0.05em;
+    }
+
+    .control {
+      margin: 14px 0;
+    }
+
+    .control label,
+    .control legend {
+      display: block;
+      font-size: 0.93rem;
+      font-weight: 700;
+      margin-bottom: 7px;
+    }
+
+    select {
+      width: 100%;
+      border: 2px solid var(--border);
+      border-radius: 12px;
+      background: white;
+      padding: 9px 10px;
+      color: var(--ink);
+    }
+
+    input[type="range"] {
+      width: 100%;
+      accent-color: var(--water-deep);
+    }
+
+    .range-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .range-value {
+      min-width: 54px;
+      padding: 4px 7px;
+      border-radius: 10px;
+      background: #dcf7ff;
+      color: #08658b;
+      font-weight: 800;
+      text-align: center;
+    }
+
+    fieldset {
+      border: 0;
+      margin: 14px 0;
+      padding: 0;
+    }
+
+    .pour-options {
+      display: flex;
+      gap: 6px;
+    }
+
+    .choice-chip {
+      flex: 1;
+      position: relative;
+    }
+
+    .choice-chip input {
+      position: absolute;
+      opacity: 0;
+    }
+
+    .choice-chip span {
+      display: block;
+      padding: 9px 4px;
+      text-align: center;
+      border: 2px solid var(--border);
+      border-radius: 12px;
+      font-size: 0.9rem;
+      font-weight: 700;
+      background: white;
+    }
+
+    .choice-chip input:checked + span {
+      background: #d8f6fe;
+      border-color: #34bedf;
+      color: #075579;
+    }
+
+    .switch-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 9px 0;
+      font-size: 0.93rem;
+      font-weight: 700;
+    }
+
+    .switch-row input {
+      width: 20px;
+      height: 20px;
+      accent-color: var(--leaf);
+    }
+
+    .button-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-top: 17px;
+    }
+
+    .main-action,
+    .secondary-action {
+      border: 0;
+      border-radius: 15px;
+      padding: 11px 8px;
+      font-weight: 800;
+      transition: transform 0.15s ease;
+    }
+
+    .main-action {
+      background: linear-gradient(135deg, #19aeda, #087da9);
+      color: white;
+      grid-column: span 2;
+      font-size: 1.03rem;
+    }
+
+    .secondary-action {
+      background: #ebf8f9;
+      color: #15677c;
+    }
+
+    .main-action:hover,
+    .secondary-action:hover {
+      transform: translateY(-2px);
+    }
+
+    .simulation {
+      padding: 16px 18px 18px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .sim-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 9px;
+      margin-bottom: 8px;
+    }
+
+    .mode-chip {
+      background: #e8fbef;
+      color: #217254;
+      border-radius: 999px;
+      font-size: 0.86rem;
+      font-weight: 700;
+      padding: 6px 11px;
+      white-space: nowrap;
+    }
+
+    .sim-canvas {
+      background:
+        linear-gradient(180deg, #f5fcff 0, #ffffff 72%),
+        repeating-linear-gradient(0deg, transparent 0 32px, rgba(13, 112, 146, .05) 33px);
+      border-radius: 22px;
+      border: 2px dashed #b9e3ed;
+      min-height: 403px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      padding: 8px 5px;
+    }
+
+    #pipeSvg {
+      display: block;
+      width: min(100%, 580px);
+      max-height: 358px;
+      overflow: visible;
+    }
+
+    .water-surface {
+      transition: y 1.25s cubic-bezier(.3, .8, .25, 1), height 1.25s cubic-bezier(.3, .8, .25, 1);
+    }
+
+    .water-wave {
+      transition: y 1.25s cubic-bezier(.3, .8, .25, 1);
+    }
+
+    .balance-line {
+      opacity: 0;
+      transition: opacity 0.25s ease;
+    }
+
+    .balance-line.visible {
+      opacity: 1;
+    }
+
+    .bubble {
+      animation: rise 2.4s ease-in infinite;
+      opacity: 0;
+    }
+
+    .flowing .bubble {
+      opacity: 0.56;
+    }
+
+    @keyframes rise {
+      from { transform: translateY(14px); }
+      to { transform: translateY(-22px); }
+    }
+
+    .sim-caption {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 10px;
+      color: #446578;
+      font-size: 0.93rem;
+      min-height: 31px;
+      text-align: center;
+    }
+
+    .legend-dot {
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: var(--water);
+      vertical-align: middle;
+      margin-right: 4px;
+    }
+
+    .researcher {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      padding: 12px;
+      background: #e9faff;
+      border-radius: 18px;
+      margin-bottom: 15px;
+    }
+
+    .character {
+      width: 54px;
+      height: 61px;
+      flex-shrink: 0;
+    }
+
+    .speech {
+      margin: 0;
+      font-size: 0.92rem;
+      line-height: 1.52;
+      font-weight: 700;
+      color: #0b5f80;
+    }
+
+    .status {
+      border-radius: 17px;
+      padding: 12px 12px 11px;
+      background: #f3f8fa;
+      margin-bottom: 13px;
+    }
+
+    .status-label {
+      color: var(--muted);
+      font-size: 0.82rem;
+      font-weight: 700;
+    }
+
+    .status-value {
+      margin-top: 4px;
+      font-size: 1.16rem;
+      font-weight: 900;
+      color: #0a6689;
+    }
+
+    .meter-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 7px;
+      margin: 11px 0 17px;
+    }
+
+    .meter {
+      padding: 9px 4px;
+      border-radius: 12px;
+      text-align: center;
+      background: #f0fbfd;
+    }
+
+    .meter b {
+      display: block;
+      color: #08688d;
+      font-size: 1.1rem;
+    }
+
+    .meter small {
+      color: var(--muted);
+    }
+
+    .predict {
+      border-top: 2px dashed #d9eaed;
+      padding-top: 13px;
+    }
+
+    .predict p {
+      margin: 0 0 9px;
+      font-size: 0.95rem;
+      font-weight: 800;
+      line-height: 1.5;
+    }
+
+    .prediction-buttons {
+      display: grid;
+      gap: 7px;
+    }
+
+    .prediction-buttons button {
+      text-align: left;
+      border: 2px solid #d6e9ee;
+      border-radius: 11px;
+      background: white;
+      padding: 9px;
+      color: var(--ink);
+      font-weight: 700;
+    }
+
+    .prediction-buttons button.selected {
+      border-color: #18a8d5;
+      background: #e3f9ff;
+    }
+
+    .prediction-buttons button.correct {
+      border-color: #3aaa68;
+      background: #e9faef;
+    }
+
+    .feedback {
+      display: none;
+      padding: 10px;
+      border-radius: 12px;
+      margin-top: 8px;
+      line-height: 1.52;
+      font-size: 0.9rem;
+      background: #fff4cd;
+      color: #61490a;
+    }
+
+    .feedback.show {
+      display: block;
+    }
+
+    .missions {
+      margin-top: 18px;
+      padding: clamp(16px, 2.5vw, 24px);
+    }
+
+    .missions-title {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    .progress {
+      border-radius: 999px;
+      background: #e9f6fa;
+      padding: 8px 13px;
+      color: #14728e;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .mission-grid {
+      display: grid;
+      grid-template-columns: minmax(275px, 1.03fr) minmax(330px, 1.15fr);
+      gap: 17px;
+    }
+
+    .story-card,
+    .quiz-card {
+      border: 2px solid #dcecf0;
+      border-radius: 22px;
+      padding: clamp(13px, 2vw, 19px);
+      background: white;
+    }
+
+    .story-visual {
+      display: grid;
+      grid-template-columns: 132px 1fr;
+      align-items: center;
+      gap: 13px;
+      margin: 10px 0 12px;
+    }
+
+    .story-visual svg {
+      width: 132px;
+      height: 135px;
+      background: #f1fcff;
+      border-radius: 18px;
+    }
+
+    .story-text {
+      font-size: 0.94rem;
+      line-height: 1.68;
+      margin: 0;
+    }
+
+    .story-question {
+      padding: 11px;
+      border-radius: 14px;
+      background: #fff8d7;
+      font-weight: 800;
+      line-height: 1.5;
+    }
+
+    .story-choices {
+      display: flex;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .answer-button {
+      flex: 1;
+      padding: 10px;
+      border: 2px solid #d3e9ed;
+      background: white;
+      border-radius: 12px;
+      font-weight: 800;
+      color: #135b75;
+    }
+
+    .answer-button.good,
+    .option.good {
+      border-color: #35a967;
+      background: #def8e7;
+    }
+
+    .answer-button.try,
+    .option.try {
+      border-color: #ed9b30;
+      background: #fff1d8;
+    }
+
+    .story-response {
+      margin: 9px 0 0;
+      font-size: 0.92rem;
+      min-height: 27px;
+      color: #33704e;
+      font-weight: 700;
+    }
+
+    .question {
+      margin: 0 0 13px;
+      padding: 0 0 12px;
+      border-bottom: 1px dashed #d4e7eb;
+    }
+
+    .question:last-of-type {
+      border-bottom: 0;
+    }
+
+    .question-title {
+      font-size: 0.95rem;
+      line-height: 1.55;
+      font-weight: 800;
+      margin: 0 0 7px;
+    }
+
+    .options {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+    }
+
+    .option {
+      text-align: left;
+      border: 2px solid #d5e8ee;
+      background: #fbfeff;
+      border-radius: 11px;
+      min-height: 42px;
+      padding: 7px 8px;
+      color: var(--ink);
+      font-size: 0.87rem;
+      line-height: 1.4;
+    }
+
+    .quiz-result {
+      border-radius: 14px;
+      background: #e9faff;
+      color: #08658b;
+      font-weight: 800;
+      padding: 11px;
+      margin-top: 6px;
+      line-height: 1.55;
+    }
+
+    .teacher-note {
+      margin-top: 18px;
+      padding: 15px 18px;
+      font-size: 0.91rem;
+      color: #3f6070;
+      line-height: 1.65;
+    }
+
+    .teacher-note summary {
+      cursor: pointer;
+      color: #075579;
+      font-size: 1rem;
+      font-weight: 800;
+    }
+
+    .teacher-note p {
+      margin: 10px 0 0;
+    }
+
+    @media (max-width: 1060px) {
+      .dashboard {
+        grid-template-columns: minmax(235px, 0.82fr) minmax(400px, 1.3fr);
+      }
+
+      .results {
+        grid-column: 1 / -1;
+        display: grid;
+        grid-template-columns: 1.2fr 0.8fr 1fr;
+        gap: 12px;
+        align-items: start;
+      }
+
+      .researcher {
+        margin: 0;
+      }
+
+      .predict {
+        padding-top: 0;
+        border-top: 0;
+      }
+    }
+
+    @media (max-width: 760px) {
+      .page {
+        padding: 9px 9px 25px;
+      }
+
+      .topbar {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .header-actions {
+        width: 100%;
+      }
+
+      .header-actions button {
+        flex: 1;
+      }
+
+      .dashboard,
+      .mission-grid {
+        display: flex;
+        flex-direction: column;
+      }
+
+      .simulation {
+        order: 1;
+      }
+
+      .tools {
+        order: 2;
+      }
+
+      .results {
+        order: 3;
+        display: block;
+      }
+
+      .sim-canvas {
+        min-height: 316px;
+      }
+
+      #pipeSvg {
+        max-height: 292px;
+      }
+
+      .researcher {
+        margin-bottom: 13px;
+      }
+
+      .predict {
+        padding-top: 13px;
+        border-top: 2px dashed #d9eaed;
+      }
+
+      .missions-title {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .story-visual {
+        grid-template-columns: 1fr;
+      }
+
+      .story-visual svg {
+        width: min(180px, 100%);
+        justify-self: center;
+      }
+    }
+
+    @media (max-width: 430px) {
+      .brand {
+        align-items: flex-start;
+      }
+
+      .drop-logo {
+        width: 48px;
+        height: 48px;
+      }
+
+      .options {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        transition-duration: 0.01ms !important;
+        animation-duration: 0.01ms !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <header class="topbar panel">
+      <div class="brand">
+        <div class="drop-logo" aria-hidden="true"></div>
+        <div>
+          <h1>連通管探險站：水面會停在哪裡？</h1>
+          <p class="subtitle">改變透明杯的形狀，觀察清水最後會不會排成一樣高。</p>
+        </div>
+      </div>
+      <nav class="header-actions" aria-label="教材工具">
+        <button class="pill sun" id="demoButton" type="button">教師示範</button>
+        <button class="pill" id="focusButton" type="button">放大實驗區</button>
+        <button class="pill" id="resetTopButton" type="button">重新開始</button>
+      </nav>
+    </header>
+
+    <section class="dashboard" aria-label="連通管互動探索儀表板">
+      <aside class="tools panel" aria-label="探索工具箱">
+        <p class="section-kicker">探索工具箱</p>
+        <h2>我想怎麼試？</h2>
+
+        <div class="control">
+          <label for="shapeSelect">透明杯造型</label>
+          <select id="shapeSelect">
+            <option value="equal">兩個一樣粗的杯子</option>
+            <option value="unequal" selected>一寬一細的杯子</option>
+            <option value="three">三個不同形狀的杯子</option>
+            <option value="curved">彎彎造型連通杯</option>
+          </select>
+        </div>
+
+        <div class="control">
+          <label for="amountRange">加入多少清水？</label>
+          <div class="range-row">
+            <input id="amountRange" type="range" min="1" max="3" step="1" value="2" aria-describedby="amountValue">
+            <span class="range-value" id="amountValue">中量</span>
+          </div>
+        </div>
+
+        <fieldset>
+          <legend>從哪邊倒入水？</legend>
+          <div class="pour-options">
+            <label class="choice-chip"><input type="radio" name="pour" value="left" checked><span>左杯</span></label>
+            <label class="choice-chip"><input type="radio" name="pour" value="right"><span>右杯</span></label>
+            <label class="choice-chip" id="middle"><input type="radio" name="pour" value="middle"><span>中間</span></label>
+          </div>
+        </fieldset>
+
+        <div class="switch-row">
+          <label for="lineToggle">顯示水平提示線</label>
+          <input id="lineToggle" type="checkbox">
+        </div>
+        <div class="switch-row">
+          <label for="scaleToggle">顯示高度刻度</label>
+          <input id="scaleToggle" type="checkbox" checked>
+        </div>
+
+        <div class="button-row">
+          <button class="main-action" id="flowButton" type="button">打開通道，開始流動</button>
+          <button class="secondary-action" id="pauseButton" type="button" aria-pressed="false">減少動態：關</button>
+          <button class="secondary-action" id="resetButton" type="button">重設實驗</button>
+        </div>
+      </aside>
+
+      <section class="simulation panel" id="simulation" aria-label="透明連通杯模擬畫面">
+        <div class="sim-head">
+          <div>
+            <p class="section-kicker">觀察實驗區</p>
+            <h2>透明杯裡的水</h2>
+          </div>
+          <span class="mode-chip">同種液體：清水</span>
+        </div>
+        <div class="sim-canvas" id="simCanvas">
+          <svg id="pipeSvg" viewBox="0 0 600 390" role="img" aria-labelledby="svgTitle svgDesc">
+            <title id="svgTitle">兩個底部相通的透明杯模擬</title>
+            <desc id="svgDesc">水從其中一個杯子流到另一個杯子，最後兩側水面會在同樣高度。</desc>
+            <g id="scaleMarks" aria-hidden="true"></g>
+            <g id="balanceGuide" class="balance-line" aria-hidden="true">
+              <line id="guideLine" x1="40" x2="556" y1="190" y2="190" stroke="#f5a623" stroke-width="3" stroke-dasharray="10 8"></line>
+              <rect x="434" y="158" width="130" height="27" rx="13" fill="#fff1bb"></rect>
+              <text x="499" y="177" fill="#7b5800" text-anchor="middle" font-size="14" font-weight="bold">一樣高的水面</text>
+            </g>
+            <g id="vessels"></g>
+            <g id="waterLayer"></g>
+            <g id="valveLayer"></g>
+            <g id="glassOutline"></g>
+            <g id="labels"></g>
+          </svg>
+          <div class="sim-caption" aria-live="polite">
+            <span><span class="legend-dot"></span>清水</span>
+            <span id="captionText">通道暫時關閉。先猜猜看，再打開通道！</span>
+          </div>
+        </div>
+      </section>
+
+      <aside class="results panel" aria-label="發現與預測">
+        <div class="researcher">
+          <svg class="character" viewBox="0 0 58 70" aria-hidden="true">
+            <path d="M29 3C22 16 9 26 9 40c0 13 9 23 20 23s20-10 20-23C49 26 36 16 29 3Z" fill="#32c7ec" stroke="#1488bb" stroke-width="2.5"/>
+            <circle cx="22" cy="39" r="3" fill="#16324a"/>
+            <circle cx="36" cy="39" r="3" fill="#16324a"/>
+            <path d="M22 48c4 5 10 5 14 0" fill="none" stroke="#16324a" stroke-width="2.5" stroke-linecap="round"/>
+            <path d="M18 29c3-4 7-7 10-9" fill="none" stroke="white" stroke-opacity=".7" stroke-width="4" stroke-linecap="round"/>
+          </svg>
+          <p class="speech" id="researcherSpeech">嗨！我是小小水滴研究員。先選一個答案，預測最後的水面吧！</p>
+        </div>
+
+        <div class="status">
+          <div class="status-label">目前水的狀態</div>
+          <div class="status-value" id="stateText" aria-live="polite">通道關閉：等待預測</div>
+          <div class="meter-grid" id="meters">
+            <div class="meter"><b id="leftLevel">較高</b><small>左杯水面</small></div>
+            <div class="meter"><b id="rightLevel">較低</b><small>右杯水面</small></div>
+          </div>
+        </div>
+
+        <div class="predict">
+          <p>水停止流動後，水面會怎樣？</p>
+          <div class="prediction-buttons" id="predictionButtons">
+            <button data-answer="left" type="button">左杯水面比較高</button>
+            <button data-answer="right" type="button">右杯水面比較高</button>
+            <button data-answer="equal" type="button">每個杯子的水面一樣高</button>
+          </div>
+          <div class="feedback" id="predictionFeedback" aria-live="polite"></div>
+        </div>
+      </aside>
+    </section>
+
+    <section class="missions panel" id="missions" aria-label="生活任務與學習檢核">
+      <div class="missions-title">
+        <div>
+          <p class="section-kicker">數位閱讀與挑戰</p>
+          <h2>生活裡也找得到連通管</h2>
+        </div>
+        <div class="progress" id="progressText">完成任務：0 / 4 ★</div>
+      </div>
+
+      <div class="mission-grid">
+        <article class="story-card">
+          <p class="section-kicker">圖文任務</p>
+          <h2>兩個相通的透明杯</h2>
+          <div class="story-visual">
+            <svg viewBox="0 0 145 145" role="img" aria-label="兩個用透明小管相連的透明杯，杯中水面等高">
+              <rect x="12" y="24" width="46" height="89" rx="6" fill="#eaf9fc" stroke="#43869a" stroke-width="3"/>
+              <rect x="87" y="44" width="43" height="69" rx="6" fill="#eaf9fc" stroke="#43869a" stroke-width="3"/>
+              <path d="M42 112v15h67v-15" fill="none" stroke="#43869a" stroke-width="9" stroke-linejoin="round"/>
+              <path d="M18 72h34v35H18zm75 0h31v35H93zM42 107v14h67v-14" fill="#36c7ec"/>
+              <line x1="10" y1="72" x2="133" y2="72" stroke="#ff9e27" stroke-width="2.5" stroke-dasharray="5 4"/>
+            </svg>
+            <p class="story-text">
+              小米把一個寬杯和一個細杯用透明小管接在一起，再倒入清水。水可以經過小管流動。雖然兩個杯子的形狀不一樣，靜止後，水面會停在同樣的高度。
+            </p>
+          </div>
+          <div class="story-question">小米換成更細的右杯，水靜止後右杯水面會比左杯高嗎？</div>
+          <div class="story-choices" aria-label="圖文任務答案">
+            <button type="button" class="answer-button" data-story-answer="no">不會，仍然一樣高</button>
+            <button type="button" class="answer-button" data-story-answer="yes">會，細杯比較高</button>
+          </div>
+          <p class="story-response" id="storyResponse" aria-live="polite">讀完圖文後，選出你的答案。</p>
+        </article>
+
+        <article class="quiz-card">
+          <p class="section-kicker">最後檢核</p>
+          <h2>我是連通管小高手</h2>
+
+          <div class="question" data-correct="c">
+            <p class="question-title">1. 兩個底部相通的透明杯裝入清水，水不再流動後會怎樣？</p>
+            <div class="options">
+              <button class="option" data-value="a" type="button">A. 寬杯水面較高</button>
+              <button class="option" data-value="b" type="button">B. 細杯水面較高</button>
+              <button class="option" data-value="c" type="button">C. 兩杯水面一樣高</button>
+              <button class="option" data-value="d" type="button">D. 水全部跑到寬杯</button>
+            </div>
+          </div>
+
+          <div class="question" data-correct="b">
+            <p class="question-title">2. 哪個條件符合今天觀察的連通管實驗？</p>
+            <div class="options">
+              <button class="option" data-value="a" type="button">A. 裝不同飲料</button>
+              <button class="option" data-value="b" type="button">B. 底部相通並裝清水</button>
+              <button class="option" data-value="c" type="button">C. 杯子沒有相通</button>
+              <button class="option" data-value="d" type="button">D. 杯子完全密閉</button>
+            </div>
+          </div>
+
+          <div class="question" data-correct="a">
+            <p class="question-title">3. 看到兩個相通透明杯的水面一樣高，可以得到什麼發現？</p>
+            <div class="options">
+              <button class="option" data-value="a" type="button">A. 清水會流到平衡水面</button>
+              <button class="option" data-value="b" type="button">B. 細杯會製造更多水</button>
+              <button class="option" data-value="c" type="button">C. 杯子形狀決定水的顏色</button>
+              <button class="option" data-value="d" type="button">D. 水永遠不停流動</button>
+            </div>
+          </div>
+          <div class="quiz-result" id="quizResult" aria-live="polite">答完三題，就能取得小小研究員徽章！</div>
+        </article>
+      </div>
+    </section>
+
+    <details class="teacher-note panel">
+      <summary>教師使用提示與模型範圍</summary>
+      <p>
+        建議先讓學生在未顯示水平線時作預測，再播放水的流動，最後開啟水平提示線進行討論。
+        本教材第一版只呈現相同液體（清水）、透明杯底部彼此相通且上方開放的情境；動畫速度為教學示意，
+        暫不處理不同液體、外加壓力、毛細作用或真實流速。
+      </p>
+    </details>
+  </main>
+
+  <script>
+    const shapes = {
+      equal: {
+        name: "兩個一樣粗的杯子",
+        vessels: [{ x: 108, width: 126 }, { x: 366, width: 126 }]
+      },
+      unequal: {
+        name: "一寬一細的杯子",
+        vessels: [{ x: 82, width: 174 }, { x: 393, width: 84 }]
+      },
+      three: {
+        name: "三個不同形狀的杯子",
+        vessels: [{ x: 53, width: 88 }, { x: 244, width: 121 }, { x: 464, width: 69 }]
+      },
+      curved: {
+        name: "彎彎造型連通杯",
+        vessels: [{ x: 93, width: 116, tilted: -5 }, { x: 382, width: 110, tilted: 5 }]
+      }
+    };
+
+    const svgNS = "http://www.w3.org/2000/svg";
+    const amountLabels = { 1: "少量", 2: "中量", 3: "大量" };
+    const finalHeights = { 1: 246, 2: 194, 3: 140 };
+    let phase = "ready";
+    let prediction = "";
+    let reduceMotion = false;
+    let storyDone = false;
+    const quizAnswers = {};
+
+    const el = (id) => document.getElementById(id);
+    const shapeSelect = el("shapeSelect");
+    const amountRange = el("amountRange");
+    const simCanvas = el("simCanvas");
+
+    function svgElement(tag, attrs = {}) {
+      const node = document.createElementNS(svgNS, tag);
+      Object.entries(attrs).forEach(([name, value]) => node.setAttribute(name, value));
+      return node;
+    }
+
+    function currentShape() {
+      return shapes[shapeSelect.value];
+    }
+
+    function pourSide() {
+      return document.querySelector('input[name="pour"]:checked').value;
+    }
+
+    function setupScale() {
+      const marks = el("scaleMarks");
+      marks.innerHTML = "";
+      for (let i = 0; i < 5; i += 1) {
+        const y = 110 + i * 44;
+        marks.appendChild(svgElement("line", {
+          x1: 27, x2: 53, y1: y, y2: y,
+          stroke: "#82abb8", "stroke-width": 2
+        }));
+        const text = svgElement("text", {
+          x: 21, y: y + 5, fill: "#638798",
+          "font-size": 13, "text-anchor": "end", "font-weight": 700
+        });
+        text.textContent = `${5 - i}`;
+        marks.appendChild(text);
+      }
+      marks.style.display = el("scaleToggle").checked ? "block" : "none";
+    }
+
+    function makeVesselPaths(vessel, index) {
+      const top = 70;
+      const base = 314;
+      const left = vessel.x;
+      const right = vessel.x + vessel.width;
+      const innerLeft = left + 8;
+      const innerWidth = vessel.width - 16;
+      const transform = vessel.tilted ? `rotate(${vessel.tilted} ${left + vessel.width / 2} ${base})` : "";
+      const group = svgElement("g", { transform });
+
+      const interior = svgElement("rect", {
+        x: innerLeft, y: top + 7, width: innerWidth, height: base - top - 7,
+        rx: 4, fill: "#eefbff"
+      });
+      group.appendChild(interior);
+
+      const outline = svgElement("path", {
+        d: `M ${left} ${top} L ${left} ${base} Q ${left} ${base + 9} ${left + 10} ${base + 9} L ${right - 10} ${base + 9} Q ${right} ${base + 9} ${right} ${base} L ${right} ${top}`,
+        fill: "none", stroke: "#347488", "stroke-width": 7, "stroke-linecap": "round", "stroke-linejoin": "round"
+      });
+
+      const water = svgElement("rect", {
+        id: `water-${index}`, class: "water-surface",
+        x: innerLeft, y: 210, width: innerWidth, height: base - 210 + 5,
+        rx: 2, fill: "url(#waterGradient)"
+      });
+      const wave = svgElement("line", {
+        id: `wave-${index}`, class: "water-wave",
+        x1: innerLeft, x2: innerLeft + innerWidth, y1: 210, y2: 210,
+        stroke: "#d8fbff", "stroke-width": 4, "stroke-linecap": "round"
+      });
+      return { group, water, wave, outline, transform };
+    }
+
+    function renderShape() {
+      const vesselGroup = el("vessels");
+      const waterGroup = el("waterLayer");
+      const valveGroup = el("valveLayer");
+      const outlineGroup = el("glassOutline");
+      const labelsGroup = el("labels");
+      vesselGroup.innerHTML = '<defs><linearGradient id="waterGradient" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#52ddf5"/><stop offset="100%" stop-color="#148acf"/></linearGradient></defs>';
+      waterGroup.innerHTML = "";
+      valveGroup.innerHTML = "";
+      outlineGroup.innerHTML = "";
+      labelsGroup.innerHTML = "";
+
+      const config = currentShape();
+      const bottomLeft = config.vessels[0].x + config.vessels[0].width / 2;
+      const last = config.vessels[config.vessels.length - 1];
+      const bottomRight = last.x + last.width / 2;
+
+      const connectorBack = svgElement("path", {
+        d: `M ${bottomLeft} 318 V 348 H ${bottomRight} V 318`,
+        fill: "none", stroke: "#347488", "stroke-width": 22, "stroke-linejoin": "round"
+      });
+      const connectorWater = svgElement("path", {
+        d: `M ${bottomLeft} 318 V 348 H ${bottomRight} V 318`,
+        fill: "none", stroke: "#168dcc", "stroke-width": 11, "stroke-linejoin": "round"
+      });
+      vesselGroup.appendChild(connectorBack);
+      waterGroup.appendChild(connectorWater);
+
+      const valveX = (bottomLeft + bottomRight) / 2;
+      const valve = svgElement("g", { id: "valve", transform: `translate(${valveX} 348)` });
+      valve.innerHTML = `
+        <circle r="17" fill="#ffcc58" stroke="#a66a13" stroke-width="3"></circle>
+        <path id="valveBar" d="M -9 -9 L 9 9" stroke="#784709" stroke-width="4" stroke-linecap="round"></path>
+        <text id="valveText" x="0" y="35" text-anchor="middle" font-size="13" font-weight="bold" fill="#885510">關閉</text>
+      `;
+      valveGroup.appendChild(valve);
+
+      config.vessels.forEach((vessel, index) => {
+        const made = makeVesselPaths(vessel, index);
+        vesselGroup.appendChild(made.group);
+        made.group.appendChild(made.water);
+        made.group.appendChild(made.wave);
+        made.group.appendChild(made.outline);
+
+        const text = svgElement("text", {
+          x: vessel.x + vessel.width / 2,
+          y: 375,
+          fill: "#355b6e",
+          "font-size": 15,
+          "font-weight": 700,
+          "text-anchor": "middle"
+        });
+        text.textContent = config.vessels.length === 3 ? ["左杯", "中杯", "右杯"][index] : `${index === 0 ? "左" : "右"}杯`;
+        labelsGroup.appendChild(text);
+      });
+
+      for (let i = 0; i < 3; i += 1) {
+        const bubble = svgElement("circle", {
+          class: "bubble", cx: bottomLeft + 38 + i * 39, cy: 339,
+          r: 4 + i, fill: "#d6fbff", style: `animation-delay: ${i * .4}s`
+        });
+        waterGroup.appendChild(bubble);
+      }
+
+      const middleOption = el("middle");
+      const middleRadio = middleOption.querySelector("input");
+      middleOption.hidden = config.vessels.length < 3;
+      if (middleOption.hidden && middleRadio.checked) {
+        document.querySelector('input[name="pour"][value="left"]').checked = true;
+      }
+      setupScale();
+      setValve(false);
+      updateWater(false);
+    }
+
+    function setValve(open) {
+      const circle = el("valve") && el("valve").querySelector("circle");
+      const bar = el("valveBar");
+      const text = el("valveText");
+      if (!circle || !bar || !text) return;
+      circle.setAttribute("fill", open ? "#8ee9ae" : "#ffcc58");
+      circle.setAttribute("stroke", open ? "#278654" : "#a66a13");
+      bar.setAttribute("d", open ? "M -10 0 L 10 0" : "M -9 -9 L 9 9");
+      bar.setAttribute("stroke", open ? "#17653e" : "#784709");
+      text.setAttribute("fill", open ? "#1c7047" : "#885510");
+      text.textContent = open ? "開啟" : "關閉";
+    }
+
+    function getStartLevels() {
+      const finalY = finalHeights[amountRange.value];
+      const count = currentShape().vessels.length;
+      const source = pourSide();
+      const sourceIndex = source === "left" ? 0 : source === "right" ? count - 1 : Math.floor(count / 2);
+      return currentShape().vessels.map((_, index) => {
+        if (index === sourceIndex) return Math.max(86, finalY - 51);
+        return Math.min(277, finalY + (count === 3 ? 32 : 48));
+      });
+    }
+
+    function setWaterLevels(levels) {
+      const base = 318;
+      levels.forEach((y, index) => {
+        const water = el(`water-${index}`);
+        const wave = el(`wave-${index}`);
+        if (!water || !wave) return;
+        water.style.transitionDuration = reduceMotion ? "0.01ms" : "";
+        wave.style.transitionDuration = reduceMotion ? "0.01ms" : "";
+        water.setAttribute("y", y);
+        water.setAttribute("height", base - y);
+        wave.setAttribute("y1", y);
+        wave.setAttribute("y2", y);
+      });
+    }
+
+    function updateMeters(final) {
+      const config = currentShape();
+      const meterGrid = el("meters");
+      const labels = config.vessels.length === 3 ? ["左杯", "中杯", "右杯"] : ["左杯", "右杯"];
+      meterGrid.innerHTML = labels.map((label) =>
+        `<div class="meter"><b>${final ? "一樣高" : "待觀察"}</b><small>${label}水面</small></div>`
+      ).join("");
+    }
+
+    function updateWater(isFlowing) {
+      const finalY = finalHeights[amountRange.value];
+      const levels = isFlowing ? currentShape().vessels.map(() => finalY) : getStartLevels();
+      setWaterLevels(levels);
+      el("guideLine").setAttribute("y1", finalY);
+      el("guideLine").setAttribute("y2", finalY);
+      updateMeters(isFlowing);
+      el("balanceGuide").classList.toggle("visible", el("lineToggle").checked && isFlowing);
+    }
+
+    function resetExperiment() {
+      phase = "ready";
+      el("flowButton").textContent = "打開通道，開始流動";
+      simCanvas.classList.remove("flowing");
+      el("stateText").textContent = "通道關閉：等待預測";
+      el("captionText").textContent = "通道暫時關閉。先猜猜看，再打開通道！";
+      el("researcherSpeech").textContent = "先選一個答案，預測最後的水面吧！";
+      el("predictionFeedback").classList.remove("show");
+      el("predictionButtons").querySelectorAll("button").forEach((button) => {
+        button.classList.remove("correct");
+      });
+      setValve(false);
+      updateWater(false);
+    }
+
+    function beginFlow() {
+      phase = "balanced";
+      simCanvas.classList.add("flowing");
+      setValve(true);
+      el("stateText").textContent = "水正在流動...";
+      el("captionText").textContent = "清水流向相通的透明杯，正在尋找平衡。";
+      el("researcherSpeech").textContent = "仔細看！不論杯子粗細，水都有辦法在相通的地方流動。";
+      updateWater(true);
+      window.setTimeout(() => {
+        if (phase !== "balanced") return;
+        simCanvas.classList.remove("flowing");
+        el("stateText").textContent = "已平衡：水面等高";
+        el("captionText").textContent = "發現了！清水靜止後，每個相通杯子的水面一樣高。";
+        el("researcherSpeech").textContent = "成功觀察！換個杯子造型再試一次，結果會改變嗎？";
+        showPredictionResult();
+      }, reduceMotion ? 40 : 1280);
+    }
+
+    function selectPrediction(answer, button) {
+      prediction = answer;
+      el("predictionButtons").querySelectorAll("button").forEach((item) => item.classList.remove("selected"));
+      button.classList.add("selected");
+      if (phase === "balanced") showPredictionResult();
+      else {
+        el("predictionFeedback").textContent = "已記下你的預測！按下「打開通道，開始流動」觀察結果。";
+        el("predictionFeedback").classList.add("show");
+      }
+    }
+
+    function showPredictionResult() {
+      const box = el("predictionFeedback");
+      el("predictionButtons").querySelector('[data-answer="equal"]').classList.add("correct");
+      if (!prediction) {
+        box.textContent = "答案揭曉：每個相通杯子的水面最後一樣高。再重設一次，先預測後觀察吧！";
+      } else if (prediction === "equal") {
+        box.textContent = "預測正確！杯子形狀不同，清水平衡後仍會停在一樣高的位置。";
+      } else {
+        box.textContent = "再想想：杯子有相通的通道，水會繼續流動，直到每邊水面一樣高。";
+      }
+      box.classList.add("show");
+    }
+
+    function updateProgress() {
+      const quizCorrect = Object.values(quizAnswers).filter(Boolean).length;
+      const complete = (storyDone ? 1 : 0) + quizCorrect;
+      el("progressText").textContent = `完成任務：${complete} / 4 ${complete === 4 ? "★★★★" : "★".repeat(complete)}`;
+      if (quizCorrect === 3) {
+        el("quizResult").textContent = "三題全對！你得到「連通管小小研究員」徽章：相通的清水平衡後水面會等高。";
+      } else {
+        el("quizResult").textContent = `目前答對 ${quizCorrect} / 3 題。看過模擬後，可以再次選答案。`;
+      }
+    }
+
+    shapeSelect.addEventListener("change", () => {
+      renderShape();
+      resetExperiment();
+    });
+    amountRange.addEventListener("input", () => {
+      el("amountValue").textContent = amountLabels[amountRange.value];
+      resetExperiment();
+    });
+    document.querySelectorAll('input[name="pour"]').forEach((radio) => {
+      radio.addEventListener("change", resetExperiment);
+    });
+    el("lineToggle").addEventListener("change", () => {
+      el("balanceGuide").classList.toggle("visible", el("lineToggle").checked && phase === "balanced");
+    });
+    el("scaleToggle").addEventListener("change", setupScale);
+    el("flowButton").addEventListener("click", beginFlow);
+    el("resetButton").addEventListener("click", resetExperiment);
+    el("resetTopButton").addEventListener("click", () => {
+      prediction = "";
+      el("predictionButtons").querySelectorAll("button").forEach((button) => button.classList.remove("selected", "correct"));
+      resetExperiment();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    });
+    el("pauseButton").addEventListener("click", () => {
+      reduceMotion = !reduceMotion;
+      document.querySelectorAll(".water-surface, .water-wave").forEach((item) => {
+        item.style.transitionDuration = reduceMotion ? "0.01ms" : "";
+      });
+      el("pauseButton").setAttribute("aria-pressed", String(reduceMotion));
+      el("pauseButton").textContent = reduceMotion ? "減少動態：開" : "減少動態：關";
+      el("researcherSpeech").textContent = reduceMotion ? "已減少水流動畫，打開通道後會直接顯示平衡結果。" : "水流動畫已開啟，可以觀察清水流向平衡的位置。";
+    });
+    el("predictionButtons").querySelectorAll("button").forEach((button) => {
+      button.addEventListener("click", () => selectPrediction(button.dataset.answer, button));
+    });
+    el("demoButton").addEventListener("click", () => {
+      shapeSelect.value = "unequal";
+      amountRange.value = "2";
+      el("amountValue").textContent = "中量";
+      el("lineToggle").checked = true;
+      renderShape();
+      prediction = "equal";
+      el("predictionButtons").querySelectorAll("button").forEach((button) => {
+        button.classList.toggle("selected", button.dataset.answer === "equal");
+      });
+      beginFlow();
+    });
+    el("focusButton").addEventListener("click", () => {
+      el("simulation").scrollIntoView({ behavior: "smooth", block: "center" });
+      if (document.fullscreenEnabled && window.innerWidth > 760) {
+        el("simulation").requestFullscreen().catch(() => {});
+      }
+    });
+
+    document.querySelectorAll("[data-story-answer]").forEach((button) => {
+      button.addEventListener("click", () => {
+        const correct = button.dataset.storyAnswer === "no";
+        document.querySelectorAll("[data-story-answer]").forEach((item) => item.classList.remove("good", "try"));
+        button.classList.add(correct ? "good" : "try");
+        el("storyResponse").textContent = correct
+          ? "正確！杯子變細也不會改變平衡後等高的結果。"
+          : "提示：回到實驗區選「一寬一細的杯子」，觀察水停下來的位置。";
+        storyDone = correct;
+        updateProgress();
+      });
+    });
+
+    document.querySelectorAll(".question").forEach((question, index) => {
+      question.querySelectorAll(".option").forEach((button) => {
+        button.addEventListener("click", () => {
+          const correct = button.dataset.value === question.dataset.correct;
+          question.querySelectorAll(".option").forEach((item) => item.classList.remove("good", "try"));
+          button.classList.add(correct ? "good" : "try");
+          quizAnswers[index] = correct;
+          updateProgress();
+        });
+      });
+    });
+
+    renderShape();
+    updateProgress();
+  </script>
+</body>
+</html>
