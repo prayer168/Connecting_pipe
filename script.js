@@ -772,10 +772,41 @@ function drawApplication(now) {
 
 function animateApplications(now) {
   drawApplication(now);
+  renderLearnCanvases(now);
   requestAnimationFrame(animateApplications);
 }
 
+function easeInOut(value) {
+  return value < .5 ? 2 * value * value : 1 - Math.pow(-2 * value + 2, 2) / 2;
+}
+
+function drawLearnPipe(ctx, leftX, leftBottom, rightX, rightBottom, pipeY, t) {
+  const points = [[leftX, leftBottom], [leftX, pipeY], [rightX, pipeY], [rightX, rightBottom]];
+  drawWaterPipe(ctx, points, "#2c6f80", 20);
+  drawWaterPipe(ctx, points, "#117ea1", 11);
+  drawFlowDots(ctx, points, t);
+}
+
+function drawEqualGuide(ctx, y, label, startX = 48, endX = 472) {
+  ctx.save();
+  ctx.strokeStyle = "#ffd166";
+  ctx.lineWidth = 4;
+  ctx.setLineDash([10, 9]);
+  ctx.beginPath();
+  ctx.moveTo(startX, y);
+  ctx.lineTo(endX, y);
+  ctx.stroke();
+  ctx.setLineDash([]);
+  drawLabel(ctx, label, (startX + endX) / 2, y - 12, "#b46b00");
+  ctx.restore();
+}
+
 function renderLearnCanvases(now) {
+  const t = now / 1000;
+  const loop = (t % 5.2) / 5.2;
+  const progress = easeInOut(loop < .72 ? loop / .72 : 1);
+  const resetFade = loop > .84 ? (loop - .84) / .16 : 0;
+
   document.querySelectorAll(".learn-canvas").forEach((canvas) => {
     const ctx = canvas.getContext("2d");
     const w = canvas.width;
@@ -783,41 +814,44 @@ function renderLearnCanvases(now) {
     drawBackground(ctx, w, h);
     const type = canvas.dataset.learnCanvas;
     if (type === "connected") {
-      drawCup(ctx, 70, 42, 118, 150, 104, "高");
-      drawCup(ctx, 332, 64, 92, 128, 134, "低");
-      ctx.strokeStyle = "#117ea1";
-      ctx.lineWidth = 14;
-      ctx.beginPath();
-      ctx.moveTo(130, 202);
-      ctx.lineTo(130, 230);
-      ctx.lineTo(378, 230);
-      ctx.lineTo(378, 202);
-      ctx.stroke();
+      const leftY = 78 + (108 - 78) * progress - resetFade * 30;
+      const rightY = 138 + (108 - 138) * progress + resetFade * 30;
+      drawLearnPipe(ctx, 130, 202, 378, 202, 230, t);
+      drawCup(ctx, 70, 42, 118, 150, leftY, "高水面");
+      drawCup(ctx, 332, 64, 92, 128, rightY, "低水面");
+      drawEqualGuide(ctx, 108, "最後停在同一條水平線");
+      if (progress < .96) {
+        drawArrow(ctx, 205, 210, 300, 210, "#e34b5f");
+        drawLabel(ctx, "水由高處流向低處", 260, 42, "#e34b5f");
+      } else {
+        drawLabel(ctx, "平衡：水面等高", 260, 42, "#117ea1");
+      }
     }
     if (type === "pressure") {
-      ctx.strokeStyle = "#ffd166";
-      ctx.lineWidth = 5;
-      ctx.setLineDash([12, 10]);
-      ctx.beginPath();
-      ctx.moveTo(60, 120);
-      ctx.lineTo(460, 120);
-      ctx.stroke();
-      ctx.setLineDash([]);
-      ctx.fillStyle = "#117ea1";
-      ctx.font = "900 24px 'Noto Sans TC', sans-serif";
-      ctx.fillText("同一深度", 190, 110);
-      ctx.fillText("壓力平衡", 190, 158);
+      const leftY = 70 + (112 - 70) * progress - resetFade * 42;
+      const rightY = 150 + (112 - 150) * progress + resetFade * 38;
+      drawLearnPipe(ctx, 134, 202, 388, 202, 228, t);
+      drawCup(ctx, 74, 44, 120, 150, leftY, "左杯");
+      drawCup(ctx, 330, 44, 116, 150, rightY, "右杯");
+      drawEqualGuide(ctx, 176, "比較同一深度");
+      const leftPressure = Math.max(0, 1 - progress);
+      drawArrow(ctx, 190, 214, 252 + leftPressure * 26, 214, "#e34b5f");
+      drawArrow(ctx, 330, 224, 286 - leftPressure * 8, 224, "#117ea1");
+      drawLabel(ctx, progress < .92 ? "左邊水柱較高，底部壓力較大" : "同一深度壓力平衡", 260, 38, progress < .92 ? "#e34b5f" : "#117ea1");
+      ctx.save();
+      ctx.fillStyle = "rgba(227,75,95,.15)";
+      roundedRect(ctx, 88, leftY, 92, 194 - leftY, 12);
+      ctx.fill();
+      ctx.restore();
     }
     if (type === "shape") {
-      drawCup(ctx, 50, 48, 150, 146, 118, "寬杯");
-      drawCup(ctx, 330, 40, 70, 154, 118, "細杯");
-      ctx.strokeStyle = "#ffd166";
-      ctx.lineWidth = 5;
-      ctx.setLineDash([12, 10]);
-      ctx.beginPath();
-      ctx.moveTo(44, 118);
-      ctx.lineTo(420, 118);
-      ctx.stroke();
+      const leftY = 88 + (118 - 88) * progress - resetFade * 30;
+      const rightY = 148 + (118 - 148) * progress + resetFade * 30;
+      drawLearnPipe(ctx, 125, 206, 365, 206, 230, t);
+      drawCup(ctx, 50, 48, 150, 146, leftY, "寬杯");
+      drawCup(ctx, 330, 40, 70, 154, rightY, "細杯");
+      drawEqualGuide(ctx, 118, "杯子形狀不同，水面仍等高");
+      drawLabel(ctx, "看水面高度，不看水量多少", 260, 42, "#117ea1");
     }
   });
 }
@@ -952,4 +986,6 @@ if (previewMode === "balanced") {
   window.setTimeout(() => runExperiment(), 80);
 } else if (previewMode === "applications") {
   showTab("applications");
+} else if (previewMode === "learn") {
+  showTab("learn");
 }
