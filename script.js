@@ -415,36 +415,42 @@ document.getElementById("printPage").addEventListener("click", () => window.prin
 
 const applicationExamples = {
   cups: {
+    emoji: "🥤",
     kicker: "例子 1",
     title: "兩個相通透明杯",
     text: "兩個透明杯用底部小管相連，水可以在杯子間流動，最後水面會停在一樣高的位置。",
     think: "想一想：如果右杯變得很細，最後水面會改變嗎？"
   },
   level: {
+    emoji: "📏",
     kicker: "例子 2",
     title: "水準管",
     text: "工地或校園測量高度時，可以利用透明水管兩端水面等高的性質，判斷兩個位置是否同高。",
     think: "想一想：為什麼水管中間可以彎曲，兩端水面仍能比較高度？"
   },
   tank: {
+    emoji: "🪣",
     kicker: "例子 3",
     title: "水桶水位管",
     text: "有些水桶旁邊接透明小管，小管和桶內相通，所以小管水面可以顯示桶內水位。",
     think: "想一想：如果透明小管底部堵住，還能顯示正確水位嗎？"
   },
   teapot: {
+    emoji: "🫖",
     kicker: "例子 4",
     title: "茶壺壺嘴",
     text: "茶壺和壺嘴底部相通，裝水後壺嘴裡的水面會和壺身裡的水面接近同高。",
     think: "想一想：為什麼壺嘴通常不會做得比壺身開口低很多？"
   },
   tower: {
+    emoji: "🏙️",
     kicker: "例子 5",
     title: "水塔供水",
     text: "高處水塔和管線相連，水會受到高度差影響流向較低位置。這是連通與水壓概念的生活延伸。",
     think: "想一想：住在高樓時，為什麼水塔位置和水壓有關？"
   },
   uTube: {
+    emoji: "🧪",
     kicker: "例子 6",
     title: "U 形管觀察",
     text: "U 形管兩邊相通，裝入同一種液體後，靜止時兩端液面會位在同一高度。",
@@ -513,6 +519,53 @@ function drawCup(ctx, x, y, w, h, waterY, label) {
   ctx.fillText(label, x + w / 2, y + h + 45);
 }
 
+function drawEqualLine(ctx, y, width, label = "同一水平面") {
+  ctx.save();
+  ctx.strokeStyle = "#ffd166";
+  ctx.lineWidth = 4;
+  ctx.setLineDash([10, 10]);
+  ctx.beginPath();
+  ctx.moveTo(width * .08, y);
+  ctx.lineTo(width * .92, y);
+  ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.fillStyle = "#8b6000";
+  ctx.font = "900 18px 'Noto Sans TC', sans-serif";
+  ctx.textAlign = "right";
+  ctx.fillText(label, width * .9, y - 12);
+  ctx.restore();
+}
+
+function drawWaterPipe(ctx, points, color = "#117ea1", width = 12) {
+  ctx.save();
+  ctx.strokeStyle = color;
+  ctx.lineWidth = width;
+  ctx.lineJoin = "round";
+  ctx.lineCap = "round";
+  ctx.beginPath();
+  points.forEach(([x, y], index) => {
+    if (index === 0) ctx.moveTo(x, y);
+    else ctx.lineTo(x, y);
+  });
+  ctx.stroke();
+  ctx.restore();
+}
+
+function drawFlowDots(ctx, points, t) {
+  const total = points.length - 1;
+  ctx.fillStyle = "#4bdff4";
+  for (let i = 0; i < 5; i += 1) {
+    const phase = (t * .55 + i / 5) % 1;
+    const segment = Math.min(total - 1, Math.floor(phase * total));
+    const local = phase * total - segment;
+    const [x1, y1] = points[segment];
+    const [x2, y2] = points[segment + 1];
+    ctx.beginPath();
+    ctx.arc(x1 + (x2 - x1) * local, y1 + (y2 - y1) * local, 5, 0, Math.PI * 2);
+    ctx.fill();
+  }
+}
+
 function drawApplication(now) {
   const rect = applicationCanvas.getBoundingClientRect();
   const scale = Math.min(window.devicePixelRatio || 1, 2);
@@ -527,7 +580,51 @@ function drawApplication(now) {
   const t = now / 1000;
   const pulse = Math.sin(t * 1.8) * 8;
 
-  if (activeApplication === "tower") {
+  const item = applicationExamples[activeApplication];
+  applicationCtx.font = "900 42px 'Noto Sans TC', sans-serif";
+  applicationCtx.textAlign = "left";
+  applicationCtx.fillStyle = "rgba(255,255,255,.86)";
+  roundedRect(applicationCtx, 24, 20, 76, 64, 18);
+  applicationCtx.fill();
+  applicationCtx.fillStyle = "#17323a";
+  applicationCtx.fillText(item.emoji, 40, 66);
+
+  if (activeApplication === "level") {
+    const leftY = height * .42 + pulse * .15;
+    const rightY = leftY;
+    drawWaterPipe(applicationCtx, [[width * .18, height * .58], [width * .18, height * .76], [width * .82, height * .76], [width * .82, height * .58]], "#117ea1", 18);
+    drawFlowDots(applicationCtx, [[width * .18, height * .58], [width * .18, height * .76], [width * .82, height * .76], [width * .82, height * .58]], t);
+    applicationCtx.strokeStyle = "#2c6f80";
+    applicationCtx.lineWidth = 8;
+    applicationCtx.beginPath();
+    applicationCtx.moveTo(width * .18, height * .2);
+    applicationCtx.lineTo(width * .18, height * .6);
+    applicationCtx.moveTo(width * .82, height * .2);
+    applicationCtx.lineTo(width * .82, height * .6);
+    applicationCtx.stroke();
+    applicationCtx.fillStyle = "#1fb6d8";
+    applicationCtx.fillRect(width * .155, leftY, width * .05, height * .6 - leftY);
+    applicationCtx.fillRect(width * .795, rightY, width * .05, height * .6 - rightY);
+    drawEqualLine(applicationCtx, leftY, width, "兩端水面等高");
+  } else if (activeApplication === "tank") {
+    const waterY = height * .42 + pulse * .12;
+    applicationCtx.strokeStyle = "#2c6f80";
+    applicationCtx.lineWidth = 8;
+    roundedRect(applicationCtx, width * .18, height * .22, width * .35, height * .48, 18);
+    applicationCtx.stroke();
+    applicationCtx.fillStyle = "#1fb6d8";
+    applicationCtx.fillRect(width * .2, waterY, width * .31, height * .7 - waterY);
+    drawWaterPipe(applicationCtx, [[width * .53, height * .68], [width * .72, height * .68], [width * .72, height * .24]], "#117ea1", 14);
+    applicationCtx.strokeStyle = "#2c6f80";
+    applicationCtx.lineWidth = 7;
+    applicationCtx.beginPath();
+    applicationCtx.moveTo(width * .72, height * .24);
+    applicationCtx.lineTo(width * .72, height * .7);
+    applicationCtx.stroke();
+    applicationCtx.fillStyle = "#1fb6d8";
+    applicationCtx.fillRect(width * .695, waterY, width * .05, height * .7 - waterY);
+    drawEqualLine(applicationCtx, waterY, width, "小管顯示桶內水位");
+  } else if (activeApplication === "tower") {
     applicationCtx.fillStyle = "#9fd6a9";
     applicationCtx.fillRect(0, height * .76, width, height * .24);
     applicationCtx.fillStyle = "#117ea1";
@@ -542,7 +639,12 @@ function drawApplication(now) {
     applicationCtx.lineTo(width * .7, height * .54);
     applicationCtx.lineTo(width * .84, height * .54);
     applicationCtx.stroke();
+    drawFlowDots(applicationCtx, [[width * .38, height * .28], [width * .7, height * .54], [width * .84, height * .54]], t);
+    applicationCtx.fillStyle = "#17323a";
+    applicationCtx.font = "900 20px 'Noto Sans TC', sans-serif";
+    applicationCtx.fillText("水由高處流向較低處", width * .48, height * .43);
   } else if (activeApplication === "teapot") {
+    const waterY = height * .52 + pulse * .08;
     applicationCtx.fillStyle = "#fff4d4";
     roundedRect(applicationCtx, width * .18, height * .38, width * .38, height * .28, 24);
     applicationCtx.fill();
@@ -553,7 +655,17 @@ function drawApplication(now) {
     applicationCtx.quadraticCurveTo(width * .72, height * .42, width * .82, height * .32);
     applicationCtx.stroke();
     applicationCtx.fillStyle = "#1fb6d8";
-    applicationCtx.fillRect(width * .21, height * .52, width * .32, height * .12);
+    applicationCtx.fillRect(width * .21, waterY, width * .32, height * .64 - waterY);
+    applicationCtx.fillRect(width * .62, waterY - height * .12, width * .045, height * .12);
+    drawEqualLine(applicationCtx, waterY, width, "壺身與壺嘴水位相近");
+  } else if (activeApplication === "uTube") {
+    const waterY = height * .34 + pulse * .1;
+    drawWaterPipe(applicationCtx, [[width * .3, height * .2], [width * .3, height * .75], [width * .7, height * .75], [width * .7, height * .2]], "#2c6f80", 22);
+    drawWaterPipe(applicationCtx, [[width * .3, waterY], [width * .3, height * .75], [width * .7, height * .75], [width * .7, waterY]], "#1fb6d8", 14);
+    drawEqualLine(applicationCtx, waterY, width, "U 形管兩端等高");
+    applicationCtx.fillStyle = "#17323a";
+    applicationCtx.font = "900 18px 'Noto Sans TC', sans-serif";
+    applicationCtx.fillText("同種液體", width * .44, height * .82);
   } else {
     drawCup(applicationCtx, width * .14, height * .2, width * .22, height * .46, height * .43 + pulse, "左");
     drawCup(applicationCtx, width * .64, height * .28, width * .16, height * .38, height * .43 + pulse, "右");
@@ -715,4 +827,6 @@ if (previewMode === "balanced") {
   showGuide.checked = true;
   reduceMotion.checked = true;
   window.setTimeout(() => runExperiment(), 80);
+} else if (previewMode === "applications") {
+  showTab("applications");
 }
