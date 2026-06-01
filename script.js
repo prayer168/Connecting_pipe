@@ -551,6 +551,44 @@ function drawWaterPipe(ctx, points, color = "#117ea1", width = 12) {
   ctx.restore();
 }
 
+function drawLabel(ctx, text, x, y, color = "#17323a") {
+  ctx.save();
+  ctx.fillStyle = color;
+  ctx.font = "900 18px 'Noto Sans TC', sans-serif";
+  ctx.textAlign = "center";
+  ctx.fillText(text, x, y);
+  ctx.restore();
+}
+
+function drawArrow(ctx, x1, y1, x2, y2, color = "#e34b5f") {
+  const angle = Math.atan2(y2 - y1, x2 - x1);
+  ctx.save();
+  ctx.strokeStyle = color;
+  ctx.fillStyle = color;
+  ctx.lineWidth = 5;
+  ctx.lineCap = "round";
+  ctx.beginPath();
+  ctx.moveTo(x1, y1);
+  ctx.lineTo(x2, y2);
+  ctx.stroke();
+  ctx.beginPath();
+  ctx.moveTo(x2, y2);
+  ctx.lineTo(x2 - Math.cos(angle - .55) * 16, y2 - Math.sin(angle - .55) * 16);
+  ctx.lineTo(x2 - Math.cos(angle + .55) * 16, y2 - Math.sin(angle + .55) * 16);
+  ctx.closePath();
+  ctx.fill();
+  ctx.restore();
+}
+
+function drawGround(ctx, width, height) {
+  ctx.fillStyle = "#e4f5d8";
+  ctx.fillRect(0, height * .78, width, height * .22);
+  ctx.fillStyle = "#b7d79d";
+  for (let x = 0; x < width; x += 28) {
+    ctx.fillRect(x, height * .77, 16, 4);
+  }
+}
+
 function drawFlowDots(ctx, points, t) {
   const total = points.length - 1;
   ctx.fillStyle = "#4bdff4";
@@ -580,19 +618,15 @@ function drawApplication(now) {
   const t = now / 1000;
   const pulse = Math.sin(t * 1.8) * 8;
 
-  const item = applicationExamples[activeApplication];
-  applicationCtx.font = "900 42px 'Noto Sans TC', sans-serif";
-  applicationCtx.textAlign = "left";
-  applicationCtx.fillStyle = "rgba(255,255,255,.86)";
-  roundedRect(applicationCtx, 24, 20, 76, 64, 18);
-  applicationCtx.fill();
-  applicationCtx.fillStyle = "#17323a";
-  applicationCtx.fillText(item.emoji, 40, 66);
-
   if (activeApplication === "level") {
     const leftY = height * .42 + pulse * .15;
     const rightY = leftY;
-    drawWaterPipe(applicationCtx, [[width * .18, height * .58], [width * .18, height * .76], [width * .82, height * .76], [width * .82, height * .58]], "#117ea1", 18);
+    drawGround(applicationCtx, width, height);
+    applicationCtx.fillStyle = "#d7b27a";
+    applicationCtx.fillRect(width * .12, height * .66, width * .1, height * .12);
+    applicationCtx.fillRect(width * .78, height * .58, width * .1, height * .2);
+    drawWaterPipe(applicationCtx, [[width * .18, height * .58], [width * .18, height * .76], [width * .82, height * .76], [width * .82, height * .58]], "#2c6f80", 22);
+    drawWaterPipe(applicationCtx, [[width * .18, height * .58], [width * .18, height * .76], [width * .82, height * .76], [width * .82, height * .58]], "#117ea1", 12);
     drawFlowDots(applicationCtx, [[width * .18, height * .58], [width * .18, height * .76], [width * .82, height * .76], [width * .82, height * .58]], t);
     applicationCtx.strokeStyle = "#2c6f80";
     applicationCtx.lineWidth = 8;
@@ -606,12 +640,20 @@ function drawApplication(now) {
     applicationCtx.fillRect(width * .155, leftY, width * .05, height * .6 - leftY);
     applicationCtx.fillRect(width * .795, rightY, width * .05, height * .6 - rightY);
     drawEqualLine(applicationCtx, leftY, width, "兩端水面等高");
+    drawLabel(applicationCtx, "位置 A", width * .18, height * .86);
+    drawLabel(applicationCtx, "位置 B", width * .82, height * .86);
+    drawArrow(applicationCtx, width * .34, height * .2, width * .22, leftY, "#e34b5f");
+    drawArrow(applicationCtx, width * .66, height * .2, width * .78, rightY, "#e34b5f");
   } else if (activeApplication === "tank") {
     const waterY = height * .42 + pulse * .12;
+    applicationCtx.fillStyle = "#f6e5c5";
+    applicationCtx.fillRect(0, height * .78, width, height * .22);
     applicationCtx.strokeStyle = "#2c6f80";
     applicationCtx.lineWidth = 8;
     roundedRect(applicationCtx, width * .18, height * .22, width * .35, height * .48, 18);
     applicationCtx.stroke();
+    applicationCtx.fillStyle = "rgba(255,255,255,.42)";
+    applicationCtx.fillRect(width * .22, height * .26, width * .07, height * .38);
     applicationCtx.fillStyle = "#1fb6d8";
     applicationCtx.fillRect(width * .2, waterY, width * .31, height * .7 - waterY);
     drawWaterPipe(applicationCtx, [[width * .53, height * .68], [width * .72, height * .68], [width * .72, height * .24]], "#117ea1", 14);
@@ -624,14 +666,26 @@ function drawApplication(now) {
     applicationCtx.fillStyle = "#1fb6d8";
     applicationCtx.fillRect(width * .695, waterY, width * .05, height * .7 - waterY);
     drawEqualLine(applicationCtx, waterY, width, "小管顯示桶內水位");
+    drawLabel(applicationCtx, "水桶", width * .35, height * .78);
+    drawLabel(applicationCtx, "透明水位管", width * .72, height * .18);
+    drawArrow(applicationCtx, width * .6, height * .34, width * .7, waterY, "#e34b5f");
   } else if (activeApplication === "tower") {
-    applicationCtx.fillStyle = "#9fd6a9";
-    applicationCtx.fillRect(0, height * .76, width, height * .24);
+    drawGround(applicationCtx, width, height);
     applicationCtx.fillStyle = "#117ea1";
     roundedRect(applicationCtx, width * .12, height * .18, width * .26, height * .18, 14);
     applicationCtx.fill();
+    applicationCtx.fillStyle = "rgba(255,255,255,.35)";
+    applicationCtx.fillRect(width * .15, height * .22, width * .2, height * .06);
     applicationCtx.fillStyle = "#8b6b3c";
     applicationCtx.fillRect(width * .2, height * .36, width * .1, height * .42);
+    applicationCtx.fillStyle = "#f2f0e6";
+    roundedRect(applicationCtx, width * .72, height * .49, width * .16, height * .29, 8);
+    applicationCtx.fill();
+    applicationCtx.fillStyle = "#a7d8e4";
+    applicationCtx.fillRect(width * .75, height * .54, width * .035, height * .05);
+    applicationCtx.fillRect(width * .81, height * .54, width * .035, height * .05);
+    applicationCtx.fillRect(width * .75, height * .64, width * .035, height * .05);
+    applicationCtx.fillRect(width * .81, height * .64, width * .035, height * .05);
     applicationCtx.strokeStyle = "#117ea1";
     applicationCtx.lineWidth = 10;
     applicationCtx.beginPath();
@@ -643,8 +697,12 @@ function drawApplication(now) {
     applicationCtx.fillStyle = "#17323a";
     applicationCtx.font = "900 20px 'Noto Sans TC', sans-serif";
     applicationCtx.fillText("水由高處流向較低處", width * .48, height * .43);
+    drawLabel(applicationCtx, "高處水塔", width * .25, height * .14);
+    drawLabel(applicationCtx, "用水處", width * .8, height * .84);
   } else if (activeApplication === "teapot") {
     const waterY = height * .52 + pulse * .08;
+    applicationCtx.fillStyle = "#f7ead3";
+    applicationCtx.fillRect(0, height * .78, width, height * .22);
     applicationCtx.fillStyle = "#fff4d4";
     roundedRect(applicationCtx, width * .18, height * .38, width * .38, height * .28, 24);
     applicationCtx.fill();
@@ -658,17 +716,35 @@ function drawApplication(now) {
     applicationCtx.fillRect(width * .21, waterY, width * .32, height * .64 - waterY);
     applicationCtx.fillRect(width * .62, waterY - height * .12, width * .045, height * .12);
     drawEqualLine(applicationCtx, waterY, width, "壺身與壺嘴水位相近");
+    applicationCtx.strokeStyle = "#8b6b3c";
+    applicationCtx.lineWidth = 7;
+    applicationCtx.beginPath();
+    applicationCtx.arc(width * .2, height * .5, width * .1, Math.PI * .6, Math.PI * 1.4);
+    applicationCtx.stroke();
+    applicationCtx.fillStyle = "#8b6b3c";
+    applicationCtx.fillRect(width * .29, height * .34, width * .16, height * .035);
+    drawLabel(applicationCtx, "壺身", width * .36, height * .74);
+    drawLabel(applicationCtx, "壺嘴", width * .74, height * .31);
   } else if (activeApplication === "uTube") {
     const waterY = height * .34 + pulse * .1;
+    applicationCtx.fillStyle = "#eef8fb";
+    roundedRect(applicationCtx, width * .17, height * .12, width * .66, height * .76, 22);
+    applicationCtx.fill();
     drawWaterPipe(applicationCtx, [[width * .3, height * .2], [width * .3, height * .75], [width * .7, height * .75], [width * .7, height * .2]], "#2c6f80", 22);
     drawWaterPipe(applicationCtx, [[width * .3, waterY], [width * .3, height * .75], [width * .7, height * .75], [width * .7, waterY]], "#1fb6d8", 14);
     drawEqualLine(applicationCtx, waterY, width, "U 形管兩端等高");
+    drawFlowDots(applicationCtx, [[width * .3, waterY], [width * .3, height * .75], [width * .7, height * .75], [width * .7, waterY]], t);
     applicationCtx.fillStyle = "#17323a";
     applicationCtx.font = "900 18px 'Noto Sans TC', sans-serif";
     applicationCtx.fillText("同種液體", width * .44, height * .82);
+    drawLabel(applicationCtx, "左端", width * .3, height * .16);
+    drawLabel(applicationCtx, "右端", width * .7, height * .16);
   } else {
-    drawCup(applicationCtx, width * .14, height * .2, width * .22, height * .46, height * .43 + pulse, "左");
-    drawCup(applicationCtx, width * .64, height * .28, width * .16, height * .38, height * .43 + pulse, "右");
+    applicationCtx.fillStyle = "#eef8fb";
+    roundedRect(applicationCtx, width * .08, height * .16, width * .82, height * .68, 18);
+    applicationCtx.fill();
+    drawCup(applicationCtx, width * .14, height * .2, width * .22, height * .46, height * .43 + pulse, "左杯");
+    drawCup(applicationCtx, width * .64, height * .28, width * .16, height * .38, height * .43 + pulse, "右杯");
     applicationCtx.strokeStyle = "#117ea1";
     applicationCtx.lineWidth = 16;
     applicationCtx.beginPath();
@@ -677,6 +753,7 @@ function drawApplication(now) {
     applicationCtx.lineTo(width * .72, height * .78);
     applicationCtx.lineTo(width * .72, height * .68);
     applicationCtx.stroke();
+    drawFlowDots(applicationCtx, [[width * .25, height * .68], [width * .25, height * .78], [width * .72, height * .78], [width * .72, height * .68]], t);
     applicationCtx.strokeStyle = "#ffd166";
     applicationCtx.lineWidth = 4;
     applicationCtx.setLineDash([10, 10]);
@@ -685,6 +762,7 @@ function drawApplication(now) {
     applicationCtx.lineTo(width * .88, height * .43 + pulse);
     applicationCtx.stroke();
     applicationCtx.setLineDash([]);
+    drawLabel(applicationCtx, "底部小管相連", width * .5, height * .86);
   }
 }
 
