@@ -264,6 +264,31 @@ main {
   height: 320px;
 }
 
+.stage-pipe::before,
+.stage-pipe::after {
+  content: "";
+  position: absolute;
+  bottom: 78px;
+  width: 36px;
+  height: 56px;
+  border-radius: 0 0 999px 999px;
+  background:
+    linear-gradient(90deg, rgba(255,255,255,.72), rgba(255,255,255,.2)),
+    #117ea1;
+  border: 6px solid rgba(44, 111, 128, .72);
+  border-top: 0;
+  box-shadow: inset 8px 0 10px rgba(255,255,255,.42);
+  z-index: 1;
+}
+
+.stage-pipe::before {
+  left: 74px;
+}
+
+.stage-pipe::after {
+  right: 78px;
+}
+
 .tube {
   position: absolute;
   bottom: 72px;
@@ -274,6 +299,8 @@ main {
   border-radius: 0 0 30px 30px;
   overflow: hidden;
   background: linear-gradient(90deg, rgba(255,255,255,.62), rgba(255,255,255,.18));
+  box-shadow: inset 12px 0 18px rgba(255,255,255,.55), inset -8px 0 14px rgba(17,126,161,.14);
+  z-index: 2;
 }
 
 .tube-left {
@@ -302,33 +329,78 @@ main {
 
 .bottom-channel {
   position: absolute;
-  left: 110px;
-  right: 92px;
-  bottom: 58px;
-  height: 24px;
+  left: 88px;
+  right: 70px;
+  bottom: 48px;
+  height: 64px;
   border-radius: 999px;
-  background: var(--deep-water);
-  box-shadow: inset 0 0 0 5px rgba(255,255,255,.22);
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.82), rgba(255,255,255,.25) 42%, rgba(30,132,160,.22)),
+    rgba(231, 250, 253, .72);
+  border: 7px solid rgba(44, 111, 128, .72);
+  box-shadow:
+    inset 0 10px 10px rgba(255,255,255,.62),
+    inset 0 -10px 16px rgba(17,126,161,.18),
+    0 12px 22px rgba(17,126,161,.14);
+  z-index: 3;
+}
+
+.bottom-channel::before {
+  content: "";
+  position: absolute;
+  left: 8px;
+  right: 8px;
+  top: 50%;
+  height: 18px;
+  transform: translateY(-50%);
+  border-radius: 999px;
+  background:
+    radial-gradient(circle at 18% 50%, rgba(255,255,255,.85) 0 4px, transparent 5px),
+    radial-gradient(circle at 52% 50%, rgba(255,255,255,.75) 0 3px, transparent 4px),
+    linear-gradient(90deg, #117ea1, #29c3df, #117ea1);
+  background-size: 110px 18px, 140px 18px, 100% 100%;
+  animation: pipeFlow 2.6s linear infinite;
+}
+
+.bottom-channel::after {
+  content: "";
+  position: absolute;
+  left: 14px;
+  right: 14px;
+  top: 10px;
+  height: 10px;
+  border-radius: 999px;
+  background: rgba(255,255,255,.58);
 }
 
 .stage-valve {
   position: absolute;
-  left: calc(50% - 18px);
-  bottom: 48px;
-  width: 36px;
-  height: 36px;
+  left: calc(50% - 24px);
+  bottom: 54px;
+  width: 48px;
+  height: 48px;
   border-radius: 50%;
-  background: var(--leaf);
-  border: 4px solid #1d7651;
+  background: radial-gradient(circle at 36% 32%, #c7f6cf, var(--leaf) 58%, #1d7651);
+  border: 5px solid #1d7651;
+  box-shadow: 0 4px 0 rgba(20,84,58,.32), inset 0 0 0 4px rgba(255,255,255,.28);
+  z-index: 4;
 }
 
 .stage-valve::after {
   content: "";
   position: absolute;
-  left: 7px;
-  right: 7px;
-  top: 14px;
-  border-top: 4px solid #14543a;
+  left: 9px;
+  right: 9px;
+  top: 18px;
+  border-top: 5px solid #14543a;
+}
+
+.stage-valve::before {
+  content: "";
+  position: absolute;
+  inset: 9px;
+  border-radius: 50%;
+  border: 2px solid rgba(255,255,255,.55);
 }
 
 .equal-guide {
@@ -338,6 +410,7 @@ main {
   top: 120px;
   border-top: 3px dashed var(--sun);
   animation: guidePulse 2.2s ease-in-out infinite;
+  z-index: 5;
 }
 
 .stage-note {
@@ -358,6 +431,11 @@ main {
 @keyframes guidePulse {
   0%, 100% { opacity: .45; }
   50% { opacity: 1; }
+}
+
+@keyframes pipeFlow {
+  from { background-position: 0 0, 0 0, 0 0; }
+  to { background-position: 110px 0, -140px 0, 0 0; }
 }
 
 .mission-grid,
@@ -850,11 +928,28 @@ fieldset {
   }
 
   .stage-pipe {
+    width: min(100%, 318px);
     height: 260px;
   }
 
+  .stage-pipe::before,
+  .stage-pipe::after {
+    bottom: 78px;
+    width: 28px;
+    height: 44px;
+    border-width: 5px;
+  }
+
+  .stage-pipe::before {
+    left: 46px;
+  }
+
+  .stage-pipe::after {
+    right: 36px;
+  }
+
   .tube {
-    transform: scale(.78);
+    transform: scale(.68);
     transform-origin: bottom center;
   }
 
@@ -867,8 +962,18 @@ fieldset {
   }
 
   .bottom-channel {
-    left: 74px;
-    right: 56px;
+    left: 54px;
+    right: 42px;
+    bottom: 46px;
+    height: 56px;
+    border-width: 6px;
+  }
+
+  .stage-valve {
+    left: calc(50% - 21px);
+    bottom: 53px;
+    width: 42px;
+    height: 42px;
   }
 
   .data-row {
