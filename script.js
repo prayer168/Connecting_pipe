@@ -170,16 +170,20 @@ function renderPipe() {
   const last = config.vessels[config.vessels.length - 1];
   const startX = first.x + first.width / 2;
   const endX = last.x + last.width / 2;
+  const connectorPath = `M ${startX} 378 H ${endX} ${config.vessels.map((vessel) => {
+    const x = vessel.x + vessel.width / 2;
+    return `M ${x} 340 V 378`;
+  }).join(" ")}`;
 
   pipeLayer.appendChild(svgEl("path", {
-    d: `M ${startX} 340 V 378 H ${endX} V 340`,
+    d: connectorPath,
     fill: "none",
     stroke: "rgba(17,126,161,.78)",
     "stroke-width": 26,
     "stroke-linejoin": "round"
   }));
   waterLayer.appendChild(svgEl("path", {
-    d: `M ${startX} 340 V 378 H ${endX} V 340`,
+    d: connectorPath,
     fill: "none",
     stroke: "#117ea1",
     "stroke-width": 13,
@@ -940,6 +944,11 @@ if (previewMode === "balanced") {
   showTab("lab");
   showGuide.checked = true;
   reduceMotion.checked = true;
+  if (new URLSearchParams(window.location.search).get("shape") === "three") {
+    vesselShape.value = "three";
+    document.querySelector('input[name="pourSide"][value="middle"]').checked = true;
+    renderPipe();
+  }
   window.setTimeout(() => runExperiment(), 80);
 } else if (previewMode === "applications") {
   showTab("applications");

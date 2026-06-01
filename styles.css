@@ -505,6 +505,123 @@ fieldset {
   display: block;
 }
 
+@media (min-width: 921px) {
+  body:has(#lab.is-active) .site-header {
+    padding-top: 8px;
+    padding-bottom: 6px;
+  }
+
+  body:has(#lab.is-active) .brand {
+    gap: 10px;
+    margin-bottom: 6px;
+  }
+
+  body:has(#lab.is-active) .brand-mark {
+    width: 46px;
+    height: 46px;
+  }
+
+  body:has(#lab.is-active) .brand h1 {
+    font-size: 1.35rem;
+  }
+
+  body:has(#lab.is-active) .brand p {
+    font-size: .82rem;
+  }
+
+  body:has(#lab.is-active) .tab {
+    padding: 7px 12px;
+    font-size: .88rem;
+  }
+
+  body:has(#lab.is-active) main {
+    padding-top: 14px;
+    padding-bottom: 14px;
+  }
+
+  #lab .lab-layout {
+    gap: 18px;
+  }
+
+  #lab .control-board,
+  #lab .simulation-board {
+    padding: 12px;
+  }
+
+  #lab .control-board {
+    gap: 6px;
+    font-size: .78rem;
+  }
+
+  #lab .control-board h2 {
+    font-size: clamp(1.05rem, 1.8vw, 1.45rem);
+    margin-bottom: 4px;
+  }
+
+  #lab .section-heading.compact {
+    margin-bottom: 0;
+  }
+
+  #lab .compare-note,
+  #lab .result-box {
+    padding: 7px 9px;
+    font-size: .76rem;
+  }
+
+  #lab .control-board input[type="range"],
+  #lab .control-board select {
+    margin-top: 2px;
+  }
+
+  #lab .control-board select,
+  #lab .data-entry input {
+    min-height: 30px;
+    padding: 4px 9px;
+  }
+
+  #lab fieldset {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 3px 8px;
+    padding: 6px 8px;
+    border-radius: 10px;
+  }
+
+  #lab fieldset legend {
+    grid-column: 1 / -1;
+  }
+
+  #lab .radio-line,
+  #lab .check-line {
+    margin: 2px 0;
+  }
+
+  #lab .range-value {
+    margin-top: 2px;
+    padding: 2px 7px;
+  }
+
+  #lab .primary-action,
+  #lab .secondary-action {
+    min-height: 30px;
+    padding: 5px 12px;
+    font-size: .78rem;
+  }
+
+  #lab .sim-toolbar {
+    margin-bottom: 6px;
+  }
+
+  #lab .pipe-simulator {
+    min-height: 270px;
+  }
+
+  #lab #pipeSvg {
+    max-width: 620px;
+    max-height: 285px;
+  }
+}
+
 .water-rect,
 .water-line {
   transition: y 1.2s ease, height 1.2s ease;
