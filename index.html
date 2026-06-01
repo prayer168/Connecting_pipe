@@ -52,13 +52,45 @@
           </div>
         </div>
         <div class="connecting-stage" aria-label="連通管水面等高示意動畫">
-          <div class="stage-pipe">
-            <div class="tube tube-left"><span class="stage-water high"></span></div>
-            <div class="tube tube-right"><span class="stage-water low"></span></div>
-            <div class="bottom-channel"></div>
-            <div class="stage-valve"></div>
-            <div class="equal-guide"></div>
-          </div>
+          <svg class="stage-pipe-svg" viewBox="0 0 520 330" role="img" aria-labelledby="observeStageTitle observeStageDesc">
+            <title id="observeStageTitle">兩個透明杯底部相通的動畫</title>
+            <desc id="observeStageDesc">兩個透明杯底部用 U 型管線相連，水流動後最後水面等高。</desc>
+            <defs>
+              <linearGradient id="stageGlass" x1="0" x2="1">
+                <stop offset="0" stop-color="#ffffff" stop-opacity=".72" />
+                <stop offset=".5" stop-color="#e9fbff" stop-opacity=".28" />
+                <stop offset="1" stop-color="#ffffff" stop-opacity=".66" />
+              </linearGradient>
+              <linearGradient id="stageWater" x1="0" x2="0" y1="0" y2="1">
+                <stop offset="0" stop-color="#54d3e7" stop-opacity=".86" />
+                <stop offset="1" stop-color="#117ea1" />
+              </linearGradient>
+            </defs>
+            <line class="stage-equal-line" x1="56" y1="136" x2="464" y2="136" />
+            <g class="stage-cups">
+              <path class="stage-glass" d="M96 44 V226 Q96 254 124 254 H206 Q234 254 234 226 V44" />
+              <path class="stage-glass" d="M340 44 V226 Q340 254 368 254 H430 Q458 254 458 226 V44" />
+              <rect class="stage-water-fill stage-water-left" x="104" y="91" width="122" height="155" rx="0" />
+              <rect class="stage-water-fill stage-water-right" x="348" y="161" width="102" height="85" rx="0" />
+              <path class="stage-shine" d="M121 55 V223" />
+              <path class="stage-shine" d="M373 55 V223" />
+            </g>
+            <g class="stage-connected-pipe">
+              <path class="stage-pipe-glass" d="M165 246 V286 H399 V246" />
+              <path class="stage-pipe-water" d="M165 246 V286 H399 V246" />
+              <g class="stage-flow-dots" aria-hidden="true">
+                <circle r="5" />
+                <circle r="4" />
+                <circle r="5" />
+                <circle r="4" />
+              </g>
+            </g>
+            <g class="stage-valve-svg" aria-hidden="true">
+              <circle cx="282" cy="286" r="26" />
+              <circle cx="282" cy="286" r="15" />
+              <path d="M270 286 H294" />
+            </g>
+          </svg>
           <div class="stage-note">打開通道後，清水流動到兩邊水面一樣高。</div>
         </div>
       </div>

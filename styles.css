@@ -258,159 +258,97 @@ main {
   padding: 28px;
 }
 
-.stage-pipe {
-  position: relative;
-  width: min(92%, 440px);
-  height: 320px;
+.stage-pipe-svg {
+  width: min(96%, 500px);
+  height: auto;
+  display: block;
+  filter: drop-shadow(0 18px 18px rgba(17,126,161,.14));
 }
 
-.stage-pipe::before,
-.stage-pipe::after {
-  content: "";
-  position: absolute;
-  bottom: 78px;
-  width: 36px;
-  height: 56px;
-  border-radius: 0 0 999px 999px;
-  background:
-    linear-gradient(90deg, rgba(255,255,255,.72), rgba(255,255,255,.2)),
-    #117ea1;
-  border: 6px solid rgba(44, 111, 128, .72);
-  border-top: 0;
-  box-shadow: inset 8px 0 10px rgba(255,255,255,.42);
-  z-index: 1;
+.stage-glass {
+  fill: url("#stageGlass");
+  stroke: rgba(44, 111, 128, .78);
+  stroke-width: 9;
+  stroke-linecap: round;
+  stroke-linejoin: round;
 }
 
-.stage-pipe::before {
-  left: 74px;
+.stage-water-fill {
+  fill: url("#stageWater");
+  animation: stageWaterLevel 4.8s ease-in-out infinite;
 }
 
-.stage-pipe::after {
-  right: 78px;
+.stage-water-left {
+  --start-y: 91px;
+  --start-height: 155px;
+  --final-y: 126px;
+  --final-height: 120px;
 }
 
-.tube {
-  position: absolute;
-  bottom: 72px;
-  width: 116px;
-  height: 230px;
-  border: 8px solid rgba(17, 126, 161, .72);
-  border-top: 0;
-  border-radius: 0 0 30px 30px;
-  overflow: hidden;
-  background: linear-gradient(90deg, rgba(255,255,255,.62), rgba(255,255,255,.18));
-  box-shadow: inset 12px 0 18px rgba(255,255,255,.55), inset -8px 0 14px rgba(17,126,161,.14);
-  z-index: 2;
+.stage-water-right {
+  --start-y: 161px;
+  --start-height: 85px;
+  --final-y: 126px;
+  --final-height: 120px;
 }
 
-.tube-left {
-  left: 34px;
+.stage-shine {
+  fill: none;
+  stroke: rgba(255,255,255,.62);
+  stroke-width: 7;
+  stroke-linecap: round;
 }
 
-.tube-right {
-  right: 34px;
-  width: 84px;
-}
-
-.stage-water {
-  position: absolute;
-  inset: auto 0 0;
-  background: linear-gradient(180deg, rgba(31, 182, 216, .72), var(--deep-water));
-  animation: stageEqualize 4.8s ease-in-out infinite;
-}
-
-.stage-water.high {
-  height: 74%;
-}
-
-.stage-water.low {
-  height: 36%;
-}
-
-.bottom-channel {
-  position: absolute;
-  left: 88px;
-  right: 70px;
-  bottom: 48px;
-  height: 64px;
-  border-radius: 999px;
-  background:
-    linear-gradient(180deg, rgba(255,255,255,.82), rgba(255,255,255,.25) 42%, rgba(30,132,160,.22)),
-    rgba(231, 250, 253, .72);
-  border: 7px solid rgba(44, 111, 128, .72);
-  box-shadow:
-    inset 0 10px 10px rgba(255,255,255,.62),
-    inset 0 -10px 16px rgba(17,126,161,.18),
-    0 12px 22px rgba(17,126,161,.14);
-  z-index: 3;
-}
-
-.bottom-channel::before {
-  content: "";
-  position: absolute;
-  left: 8px;
-  right: 8px;
-  top: 50%;
-  height: 18px;
-  transform: translateY(-50%);
-  border-radius: 999px;
-  background:
-    radial-gradient(circle at 18% 50%, rgba(255,255,255,.85) 0 4px, transparent 5px),
-    radial-gradient(circle at 52% 50%, rgba(255,255,255,.75) 0 3px, transparent 4px),
-    linear-gradient(90deg, #117ea1, #29c3df, #117ea1);
-  background-size: 110px 18px, 140px 18px, 100% 100%;
-  animation: pipeFlow 2.6s linear infinite;
-}
-
-.bottom-channel::after {
-  content: "";
-  position: absolute;
-  left: 14px;
-  right: 14px;
-  top: 10px;
-  height: 10px;
-  border-radius: 999px;
-  background: rgba(255,255,255,.58);
-}
-
-.stage-valve {
-  position: absolute;
-  left: calc(50% - 24px);
-  bottom: 54px;
-  width: 48px;
-  height: 48px;
-  border-radius: 50%;
-  background: radial-gradient(circle at 36% 32%, #c7f6cf, var(--leaf) 58%, #1d7651);
-  border: 5px solid #1d7651;
-  box-shadow: 0 4px 0 rgba(20,84,58,.32), inset 0 0 0 4px rgba(255,255,255,.28);
-  z-index: 4;
-}
-
-.stage-valve::after {
-  content: "";
-  position: absolute;
-  left: 9px;
-  right: 9px;
-  top: 18px;
-  border-top: 5px solid #14543a;
-}
-
-.stage-valve::before {
-  content: "";
-  position: absolute;
-  inset: 9px;
-  border-radius: 50%;
-  border: 2px solid rgba(255,255,255,.55);
-}
-
-.equal-guide {
-  position: absolute;
-  left: 18px;
-  right: 18px;
-  top: 120px;
-  border-top: 3px dashed var(--sun);
+.stage-equal-line {
+  stroke: var(--sun);
+  stroke-width: 4;
+  stroke-dasharray: 10 9;
   animation: guidePulse 2.2s ease-in-out infinite;
-  z-index: 5;
+}
+
+.stage-pipe-glass {
+  fill: none;
+  stroke: rgba(44, 111, 128, .76);
+  stroke-width: 32;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.stage-pipe-water {
+  fill: none;
+  stroke: #117ea1;
+  stroke-width: 15;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.stage-flow-dots circle {
+  fill: rgba(255,255,255,.86);
+  offset-path: path("M 165 246 V 286 H 399 V 246");
+  animation: stageFlowDot 2.8s linear infinite;
+}
+
+.stage-flow-dots circle:nth-child(2) { animation-delay: -.7s; }
+.stage-flow-dots circle:nth-child(3) { animation-delay: -1.4s; }
+.stage-flow-dots circle:nth-child(4) { animation-delay: -2.1s; }
+
+.stage-valve-svg circle:first-child {
+  fill: url("#stageGlass");
+  stroke: #1d7651;
+  stroke-width: 6;
+}
+
+.stage-valve-svg circle:nth-child(2) {
+  fill: var(--leaf);
+  stroke: rgba(255,255,255,.62);
+  stroke-width: 4;
+}
+
+.stage-valve-svg path {
+  fill: none;
+  stroke: #14543a;
+  stroke-width: 6;
+  stroke-linecap: round;
 }
 
 .stage-note {
@@ -420,22 +358,25 @@ main {
   text-align: center;
 }
 
-@keyframes stageEqualize {
-  0%, 18% { height: var(--start-height, 50%); }
-  55%, 100% { height: 54%; }
+@keyframes stageWaterLevel {
+  0%, 18% {
+    y: var(--start-y);
+    height: var(--start-height);
+  }
+  58%, 100% {
+    y: var(--final-y);
+    height: var(--final-height);
+  }
 }
-
-.stage-water.high { --start-height: 74%; }
-.stage-water.low { --start-height: 36%; }
 
 @keyframes guidePulse {
   0%, 100% { opacity: .45; }
   50% { opacity: 1; }
 }
 
-@keyframes pipeFlow {
-  from { background-position: 0 0, 0 0, 0 0; }
-  to { background-position: 110px 0, -140px 0, 0 0; }
+@keyframes stageFlowDot {
+  from { offset-distance: 0%; }
+  to { offset-distance: 100%; }
 }
 
 .mission-grid,
@@ -927,53 +868,8 @@ fieldset {
     padding: 18px;
   }
 
-  .stage-pipe {
-    width: min(100%, 318px);
-    height: 260px;
-  }
-
-  .stage-pipe::before,
-  .stage-pipe::after {
-    bottom: 78px;
-    width: 28px;
-    height: 44px;
-    border-width: 5px;
-  }
-
-  .stage-pipe::before {
-    left: 46px;
-  }
-
-  .stage-pipe::after {
-    right: 36px;
-  }
-
-  .tube {
-    transform: scale(.68);
-    transform-origin: bottom center;
-  }
-
-  .tube-left {
-    left: 0;
-  }
-
-  .tube-right {
-    right: 0;
-  }
-
-  .bottom-channel {
-    left: 54px;
-    right: 42px;
-    bottom: 46px;
-    height: 56px;
-    border-width: 6px;
-  }
-
-  .stage-valve {
-    left: calc(50% - 21px);
-    bottom: 53px;
-    width: 42px;
-    height: 42px;
+  .stage-pipe-svg {
+    width: min(100%, 330px);
   }
 
   .data-row {
