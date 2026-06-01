@@ -61,8 +61,8 @@ select option{background:var(--bg2)}
 .sim-area{background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:8px;display:flex;flex-direction:column;align-items:center;padding:.5rem;position:relative}
 #pipeSvg{display:block;width:min(100%,580px);max-height:340px;overflow:visible}
 .sim-caption{font-size:.75rem;color:var(--dim);text-align:center;margin-top:.3rem;min-height:1.4em}
-.water-surface{transition:y 1.25s cubic-bezier(.3,.8,.25,1),height 1.25s cubic-bezier(.3,.8,.25,1)}
-.water-wave{transition:y 1.25s cubic-bezier(.3,.8,.25,1)}
+.water-surface{transition:y 3s cubic-bezier(.3,.8,.25,1),height 3s cubic-bezier(.3,.8,.25,1)}
+.water-wave{transition:y 3s cubic-bezier(.3,.8,.25,1)}
 .balance-line{opacity:0;transition:opacity 0.25s}
 .balance-line.visible{opacity:1}
 .bubble{animation:rise 2.4s ease-in infinite;opacity:0}
@@ -1044,7 +1044,7 @@ function beginFlow(){
     el('captionText').textContent='發現了！清水靜止後，每個相通容器的水面一樣高。';
     el('researcherSpeech').textContent='成功觀察！換個容器造型再試一次，結果會改變嗎？';
     showPredictionResult();
-  }, reduceMotion?40:1300);
+  }, reduceMotion?40:3200);
 }
 
 function selectPrediction(answer,button){
